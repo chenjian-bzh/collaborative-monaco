@@ -48,6 +48,8 @@ function addNewStyle(newStyle) {
     styleElement.appendChild(document.createTextNode(newStyle));
 }
 
+const loadMap = {};
+let nameLoad = false;
 
 window.addEventListener('load', () => {
     const ydoc = new Y.Doc()
@@ -67,8 +69,6 @@ window.addEventListener('load', () => {
         color: usercolors[Math.floor(Math.random() * usercolors.length)]
     }
 
-    const loadMap = {};
-
     provider.awareness.setLocalStateField('user', user);
 
     provider.awareness.on('change', changes => {
@@ -76,6 +76,10 @@ window.addEventListener('load', () => {
             console.log('oncahgen state: ', state);
 
             if (clientID === provider.awareness.clientID) {
+                if (!nameLoad) {
+                    nameLoad = true;
+                    document.getElementById('username').appendChild(document.createTextNode(state.user.name));
+                }
                 return;
             }
 
@@ -86,12 +90,14 @@ window.addEventListener('load', () => {
 
                 loadMap[clientID] = true;
 
+
                 addNewStyle(
                     `
                        .${cs2} {
                             border-left: ${state.user.color} solid 2px;
                             border-top: ${state.user.color} solid 2px;
                             border-bottom: ${state.user.color} solid 2px;
+                            // animation: showcursor-small 2.7s cubic-bezier(0,.5,0,1) forwards;
                        } 
     
                        .${cs2}::after {
