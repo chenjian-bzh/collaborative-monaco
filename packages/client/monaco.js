@@ -48,7 +48,7 @@ function addNewStyle(newStyle) {
     styleElement.appendChild(document.createTextNode(newStyle));
 }
 
-const loadMap = {};
+const styleLoadMap = {};
 let nameLoad = false;
 
 window.addEventListener('load', () => {
@@ -83,33 +83,81 @@ window.addEventListener('load', () => {
                 return;
             }
 
-            const cs1 = `yRemoteSelection-${clientID}`;
+            // const cs1 = `yRemoteSelection-${clientID}`;
             const cs2 = `yRemoteSelectionHead-${clientID}`
 
-            if (!loadMap[clientID]) {
+            const target = document.getElementsByClassName(cs2)[0];
 
-                loadMap[clientID] = true;
+            if (target) {
 
+
+                const _p = target;
+
+                target.addEventListener('mouseenter', () => {
+                    let _node;
+
+                    for (let n of _p.children) {
+                        if (n.hasAttribute('t_name')) {
+                            _node = n;
+                        }
+                    }
+
+                    if (!_node) {
+                        _node = document.createElement('span');
+                        _node.setAttribute('t_name', 'true');
+                        _node.appendChild(document.createTextNode(state.user.name));
+                        _p.appendChild(_node);
+                    }
+
+                    _node.classList.add(`${cs2}-active`);
+                    _node.classList.remove(`${cs2}-inactive`);
+
+                })
+
+                target.addEventListener('mouseleave', () => {
+                    let _node;
+
+                    for (let n of _p.children) {
+                        if (n.hasAttribute('t_name')) {
+                            _node = n;
+                        }
+                    }
+
+                    if (_node) {
+                        // _node.classList.remove(`${cs2}-active`);
+                        _node.classList.add(`${cs2}-inactive`);
+                    }
+                })
+            }
+
+            if (!styleLoadMap[clientID]) {
+
+                styleLoadMap[clientID] = true;
 
                 addNewStyle(
                     `
                        .${cs2} {
                             border-left: ${state.user.color} solid 2px;
-                            border-top: ${state.user.color} solid 2px;
-                            border-bottom: ${state.user.color} solid 2px;
-                            // animation: showcursor-small 2.7s cubic-bezier(0,.5,0,1) forwards;
+                            border-top: 0px;
+                            border-bottom: 0px;
+                            // border-top: ${state.user.color} solid 2px;
+                            // border-bottom: ${state.user.color} solid 2px;
                        } 
-    
+
                        .${cs2}::after {
-                            position: absolute;
+                            border: 2.2px solid ${state.user.color}
+                       }
+    
+                       .${cs2}-active {
+                            position: relative;
                             content: '${state.user.name}';
                             background-color: ${state.user.color};
                             border: 0px;
-                            top: -17px;
-                            left: -1px;
+                            top: -18px;
+                            left: 2px;
                             line-height: 1;
-                            padding: 2px 4px;
-                            font-size: 12px;
+                            padding: 2px 2px;
+                            font-size: 10px;
                             font-weight: 700;
                             overflow: hidden;
                             white-space: nowrap;
@@ -117,7 +165,14 @@ window.addEventListener('load', () => {
                             color: #fff;
                             transform-origin: left bottom;
                             z-index: 1;
-                            animation: showcursor-small 2.7s cubic-bezier(0,.5,0,1) forwards;
+                            opacity: 1;
+                            transition-property: opacity;
+                            transition-duration: .2s;
+                            transition-delay: 1s;
+                        }
+
+                        .${cs2}-inactive {
+                            opacity: 0;
                         }
                     `
                 )
